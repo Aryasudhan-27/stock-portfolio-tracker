@@ -1,0 +1,65 @@
+class PortfolioTracker:
+    def _init_(self, file_path='portfolio.json'):
+        self.file_path = file_path
+        self.portfolio = self.load_portfolio()
+
+    def load_portfolio(self):
+        if os.path.exists(self.file_path):
+            with open(self.file_path, 'r') as file:
+                return json.load(file)
+        return {}
+
+    def save_portfolio(self):
+        with open(self.file_path, 'w') as file:
+            json.dump(self.portfolio, file, indent=4)
+
+    def add_stock(self, symbol, shares):
+        if symbol in self.portfolio:
+            self.portfolio[symbol] += shares
+        else:
+            self.portfolio[symbol] = shares
+        self.save_portfolio()
+
+    def remove_stock(self, symbol, shares):
+        if symbol in self.portfolio:
+            if self.portfolio[symbol] > shares:
+                self.portfolio[symbol] -= shares
+            else:
+                del self.portfolio[symbol]
+            self.save_portfolio()
+
+    def display_portfolio(self):
+        print("Your portfolio:")
+        for symbol, shares in self.portfolio.items():
+            print(f"{symbol}: {shares} shares")
+        print(f"Total number of stocks: {len(self.portfolio)}")
+
+def main():
+    tracker = PortfolioTracker()
+    
+    while True:
+        print("\nOptions:")
+        print("1. Add stock")
+        print("2. Remove stock")
+        print("3. View portfolio")
+        print("4. Exit")
+        
+        choice = input("Choose an option: ")
+        
+        if choice == '1':
+            symbol = input("Enter stock symbol: ").upper()
+            shares = int(input("Enter number of shares: "))
+            tracker.add_stock(symbol, shares)
+        elif choice == '2':
+            symbol = input("Enter stock symbol: ").upper()
+            shares = int(input("Enter number of shares to remove: "))
+            tracker.remove_stock(symbol, shares)
+        elif choice == '3':
+            tracker.display_portfolio()
+        elif choice == '4':
+            break
+        else:
+            print("Invalid option. Please try again.")
+
+if _name_ == "_main_":
+    main()
